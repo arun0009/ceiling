@@ -5,6 +5,24 @@ import (
 	"testing"
 )
 
+func TestRegionFollowsNamedProfile(t *testing.T) {
+	got, err := resolveRegion("", "cof-820283-prod", "us-west-2", "us-east-1", "")
+	if err != nil || got != "us-west-2" {
+		t.Fatalf("profile region lost: %s %v", got, err)
+	}
+	got, err = resolveRegion("eu-west-1", "cof-820283-prod", "us-west-2", "us-east-1", "")
+	if err != nil || got != "eu-west-1" {
+		t.Fatalf("explicit region lost: %s %v", got, err)
+	}
+	got, err = resolveRegion("", "cof-820283-prod", "", "us-east-1", "")
+	if err != nil || got != "us-east-1" {
+		t.Fatalf("env region lost: %s %v", got, err)
+	}
+	if _, err = resolveRegion("", "cof-820283-prod", "", "", ""); err == nil {
+		t.Fatal("missing region was accepted")
+	}
+}
+
 func TestBudgetWithoutExplicitReservesRemainsUnknown(t *testing.T) {
 	for _, pool := range []int{10, 1000} {
 		got := connectionBudget(pool, 4, "scaling max", ip(800), fp(740))

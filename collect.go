@@ -29,6 +29,7 @@ type snapshot struct {
 
 type target struct {
 	Kind     string `json:"kind"`
+	Profile  string `json:"profile,omitempty"`
 	Region   string `json:"region"`
 	Cluster  string `json:"cluster,omitempty"`
 	Service  string `json:"service,omitempty"`
@@ -298,7 +299,7 @@ func collectECS(call caller, opt options) (snapshot, error) {
 	return snapshot{
 		Evidence: c.evidence, Assessment: assessResources(c.evidence, end, db, &info, nil), Identity: id,
 		Target: target{
-			Kind: "ecs", Region: opt.region, Cluster: opt.cluster, Service: opt.service,
+			Kind: "ecs", Profile: opt.profile, Region: opt.region, Cluster: opt.cluster, Service: opt.service,
 			Hours: opt.hours, PeriodS: period, Start: iso(start), End: iso(end),
 		},
 		ECS: &info, Metrics: metrics, SinceDeploy: since, Database: db, Budget: b,
@@ -417,7 +418,7 @@ func collectLambda(call caller, opt options) (snapshot, error) {
 	return snapshot{
 		Evidence: c.evidence, Assessment: assessResources(c.evidence, end, db, nil, &info), Identity: id,
 		Target: target{
-			Kind: "lambda", Region: opt.region, Function: opt.function,
+			Kind: "lambda", Profile: opt.profile, Region: opt.region, Function: opt.function,
 			Hours: opt.hours, PeriodS: period, Start: iso(start), End: iso(end),
 		},
 		Lambda: &info, Metrics: metrics, Database: db, Budget: b, Gaps: c.gaps,

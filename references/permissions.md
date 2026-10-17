@@ -1,6 +1,6 @@
 # AWS access
 
-The collector uses the current AWS CLI session. It stores nothing. Account id comes from `sts get-caller-identity`. Region is the flag or `AWS_REGION` / `AWS_DEFAULT_REGION`.
+The collector uses the AWS CLI profile you name. It stores nothing. Account id comes from `sts get-caller-identity`. Region is `--region`, else the region on that profile, else `AWS_REGION` or `AWS_DEFAULT_REGION`.
 
 The executable allowlist is `aws.go`. Grant the rows you will actually query.
 

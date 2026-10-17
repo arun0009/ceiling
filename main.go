@@ -14,14 +14,14 @@ ceiling collect ecs --cluster C --service S --region R [--hours 24] [--pool-max 
 ceiling collect lambda --function NAME --region R [--hours 24] [--pool-max N]
 
 Collection options:
-  --profile NAME                    existing AWS CLI profile (optional)
+  --profile NAME                    AWS CLI profile, for example cof-820283-prod
   --hours N                         1..336; use 3 for current pressure, 24 for trends
   --series                          include timestamped metric datapoints
   --db-instance NAME | --db-cluster NAME | --no-db
   --pool-max N                      verified total per-task pool capacity for this DB
   --db-reserve-connections N         requires --db-other-connections and --pool-max
   --db-other-connections N           other consumers' budget (zero must be explicit)
-Region may also come from AWS_REGION or AWS_DEFAULT_REGION.
+Region is --region, else the region on --profile, else AWS_REGION or AWS_DEFAULT_REGION.
 `
 
 func main() {
@@ -101,15 +101,13 @@ func runCollect(args []string) int {
 		fmt.Fprintln(os.Stderr, "deployment connection-budget flags apply only to ECS; validate Lambda backend connections separately")
 		return 2
 	}
-	reg := *region
-	if reg == "" {
-		reg = os.Getenv("AWS_REGION")
+	prof := *profile
+	if prof == "" {
+		prof = os.Getenv("AWS_PROFILE")
 	}
-	if reg == "" {
-		reg = os.Getenv("AWS_DEFAULT_REGION")
-	}
-	if reg == "" {
-		fmt.Fprintln(os.Stderr, "pass --region or set AWS_REGION")
+	reg, err := resolveRegion(*region, prof, profileRegion(prof), os.Getenv("AWS_REGION"), os.Getenv("AWS_DEFAULT_REGION"))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		return 2
 	}
 	if *hours < 1 || *hours > 336 {
@@ -127,7 +125,7 @@ func runCollect(args []string) int {
 	opt := options{
 		series: *series, dbReserve: *reserve, dbOther: *other, budgetKnown: budgetKnown,
 		region:     reg,
-		profile:    *profile,
+		profile:    prof,
 		hours:      *hours,
 		poolMax:    *poolMax,
 		dbCluster:  *dbCluster,
@@ -137,10 +135,7 @@ func runCollect(args []string) int {
 		service:    *service,
 		function:   *function,
 	}
-	var (
-		snap snapshot
-		err  error
-	)
+	var snap snapshot
 	switch kind {
 	case "ecs":
 		if opt.cluster == "" || opt.service == "" {

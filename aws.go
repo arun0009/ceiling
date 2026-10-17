@@ -84,6 +84,40 @@ func allow(args []string) error {
 	return nil
 }
 
+// profileRegion reads the region configured for an AWS CLI profile. It is local config, not an API call, so it stays outside the allowlist.
+func profileRegion(profile string) string {
+	if profile == "" {
+		return ""
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	out, err := exec.CommandContext(ctx, "aws", "configure", "get", "region", "--profile", profile).Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// resolveRegion uses an explicit flag first, then the named profile's region, then the process environment.
+func resolveRegion(flag, profile, fromProfile, envRegion, envDefault string) (string, error) {
+	if flag != "" {
+		return flag, nil
+	}
+	if profile != "" && fromProfile != "" {
+		return fromProfile, nil
+	}
+	if envRegion != "" {
+		return envRegion, nil
+	}
+	if envDefault != "" {
+		return envDefault, nil
+	}
+	if profile != "" {
+		return "", fmt.Errorf("pass --region; AWS profile %s has no region", profile)
+	}
+	return "", errors.New("pass --region or set AWS_REGION")
+}
+
 func lastLine(text string) string {
 	text = strings.TrimSpace(text)
 	if text == "" {

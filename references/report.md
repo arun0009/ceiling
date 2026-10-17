@@ -20,4 +20,4 @@ Only the clients that need a change. For each: deadline, retries, inflight bound
 
 ## Now
 
-Account, region, target, and the windows. Recent rate, CPU, memory, latency, errors, and the database, plus what is missing. Put the last 15 minutes next to the 24-hour peak. Worst-bucket p99 is labeled as a bucket. A historical signal is included when the recent window is quiet. End with the desired count today, one alarm on the first limit, and the next check.
+AWS profile, account id, region, target, and the windows. Recent rate, CPU, memory, latency, errors, and the database, plus what is missing. Put the last 15 minutes next to the 24-hour peak. Worst-bucket p99 is labeled as a bucket. A historical signal is included when the recent window is quiet. End with the desired count today, one alarm on the first limit, and the next check.
