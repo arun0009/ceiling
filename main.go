@@ -14,7 +14,7 @@ ceiling collect ecs --cluster C --service S --region R [--hours 24] [--pool-max 
 ceiling collect lambda --function NAME --region R [--hours 24] [--pool-max N]
 
 Collection options:
-  --profile NAME                    AWS CLI profile, for example cof-820283-prod
+  --profile NAME                    AWS CLI profile, for example orders-prod
   --hours N                         1..336; use 3 for current pressure, 24 for trends
   --series                          include timestamped metric datapoints
   --db-instance NAME | --db-cluster NAME | --no-db

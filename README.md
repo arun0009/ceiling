@@ -11,7 +11,7 @@ ln -sfn /path/to/ceiling ~/.claude/skills/ceiling
 ```
 
 ```text
-/ceiling /absolute/path/to/service. Cluster prod, service orders, AWS profile cof-820283-prod.
+/ceiling /absolute/path/to/service. Cluster prod, service orders, AWS profile orders-prod.
 ```
 
 Add "audit only" to skip edits.
@@ -22,8 +22,8 @@ The AWS CLI session for `--profile` must already be signed in. Region is `--regi
 
 ```bash
 go run . scan [--app-profile prod] <service-dir>
-go run . collect ecs --cluster C --service S --profile cof-820283-prod [--region R] [--hours 24]
-go run . collect lambda --function NAME --profile cof-820283-prod [--region R] [--hours 24]
+go run . collect ecs --cluster C --service S --profile orders-prod [--region R] [--hours 24]
+go run . collect lambda --function NAME --profile orders-prod [--region R] [--hours 24]
 ```
 
 `--profile` is the AWS profile. `--app-profile` is the application profile. Use 3 hours for an incident, 24 for the day, and up to 336 for a weekly peak. The reads are the allowlist in `aws.go`.
